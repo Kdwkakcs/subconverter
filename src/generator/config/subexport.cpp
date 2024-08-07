@@ -2465,15 +2465,23 @@ proxyToSingBox(std::vector<Proxy> &nodes, rapidjson::Document &json, std::vector
             case ProxyType::HTTP:
             case ProxyType::HTTPS: {
                 addSingBoxCommonMembers(proxy, x, "http", allocator);
-                proxy.AddMember("username", rapidjson::StringRef(x.Username.c_str()), allocator);
-                proxy.AddMember("password", rapidjson::StringRef(x.Password.c_str()), allocator);
+                if (!x.Username.empty()) {
+                    proxy.AddMember("username", rapidjson::StringRef(x.Username.c_str()), allocator);
+                }
+                if (!x.Password.empty()) {
+                    proxy.AddMember("password", rapidjson::StringRef(x.Password.c_str()), allocator);
+                }
                 break;
             }
             case ProxyType::SOCKS5: {
                 addSingBoxCommonMembers(proxy, x, "socks", allocator);
                 proxy.AddMember("version", "5", allocator);
-                proxy.AddMember("username", rapidjson::StringRef(x.Username.c_str()), allocator);
-                proxy.AddMember("password", rapidjson::StringRef(x.Password.c_str()), allocator);
+                if (!x.Username.empty()) {
+                    proxy.AddMember("username", rapidjson::StringRef(x.Username.c_str()), allocator);
+                }
+                if (!x.Password.empty()) {
+                    proxy.AddMember("password", rapidjson::StringRef(x.Password.c_str()), allocator);
+                }
                 break;
             }
             case ProxyType::Hysteria: {
