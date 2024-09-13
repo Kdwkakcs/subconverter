@@ -1,0 +1,20 @@
+{
+    "name": "Alpine Codespace",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "settings": {
+      "terminal.integrated.shell.linux": "/bin/zsh"
+    },
+    "extensions": [
+      // 在此添加您需要的任何 VS Code 扩展，例如：
+      // "ms-vscode.cpptools",
+      // "dbaeumer.vscode-eslint"
+      "GitHub.copilot",
+      "ms-vscode.cmake-tools"
+    ],
+    "forwardPorts": [
+      // 在此列出您需要转发的任何端口，例如 3000, 8000 等
+    ],
+    "postCreateCommand": "echo '开发环境已准备就绪！'"
+  }
