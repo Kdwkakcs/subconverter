@@ -129,6 +129,7 @@ ADD_LIBRARY(${BUILD_TARGET_NAME} STATIC
     src/utils/network.cpp
     src/utils/regexp.cpp
     src/utils/string.cpp
+    src/utils/conversion.cpp
     src/utils/urlencode.cpp)
 TARGET_COMPILE_DEFINITIONS(${BUILD_TARGET_NAME} PRIVATE -DNO_JS_RUNTIME -DNO_WEBGET)
 

@@ -130,4 +130,9 @@ int explodeConf(const std::string &filepath, std::vector<Proxy> &nodes);
 
 int explodeConfContent(const std::string &content, std::vector<Proxy> &nodes);
 
+void explodeString(std::string str, std::vector<Proxy> &nodes, std::string type);
+
+Proxy explodeStr(std::string str, std::string type);
+std::vector<Proxy> explodeConfs(std::string str);
+
 #endif // SUBPARSER_H_INCLUDED

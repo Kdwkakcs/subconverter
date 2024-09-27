@@ -596,6 +596,8 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
                 *status_code = 400;
                 return "The following link doesn't contain any valid node info: " + x;
             }
+        } else {
+            writeLog(0, "Successfully fetched node data from url '" + x + "'.", LOG_LEVEL_INFO);
         }
         groupID++;
     }
