@@ -14,7 +14,6 @@ extern "C" {
         // 将 C 字符串转换为 std::string 进行处理
         std::string goStr(input);
         std::string goDelimiter(delimiter);
-
         std::string processedStr;
         if (goDelimiter == "multi") {
             std::vector<Proxy> proxy = explodeConfs(goStr);

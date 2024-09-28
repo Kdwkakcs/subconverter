@@ -2902,7 +2902,7 @@ Proxy explodeSingboxStr(std::string singboxStr) {
     Proxy node;
     json.Parse(singboxStr.c_str());
     if (json.HasParseError() || !json.IsObject()) {
-        std::cerr << "Error parsing singbox node" << std::endl;
+        std::cerr << "Error parsing singbox node" << singboxStr <<std::endl;
         return node;
     }
     node = explodeSingboxNode(json);
@@ -3018,7 +3018,6 @@ void explodeSub(std::string sub, std::vector<Proxy> &nodes) {
     std::string strLink;
     bool processed = false;
 
-    std::cout << sub << std::endl;
     //try to parse as SSD configuration
     if (startsWith(sub, "ssd://")) {
         explodeSSD(sub, nodes);
@@ -3133,7 +3132,6 @@ Proxy explodeStr(std::string str,  std::string type) {
             break;
         case "base64"_hash:
             str = urlSafeBase64Decode(str);
-            std::cout << str << std::endl;
             explode(str, node);
             break;
         default:

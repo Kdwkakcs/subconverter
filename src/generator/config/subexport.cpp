@@ -2973,7 +2973,6 @@ std::string nodeToSingbox(Proxy node) {
                 addSingBoxCommonMembers(proxy, x, "hysteria2", allocator);
                 proxy.AddMember("password", rapidjson::StringRef(x.Password.c_str()), allocator);
                 if (!x.TLSSecure) {
-
                     rapidjson::Value tls(rapidjson::kObjectType);
                     tls.AddMember("enabled", true, allocator);
                     if (!x.ServerName.empty())
@@ -3012,8 +3011,9 @@ std::string nodeToSingbox(Proxy node) {
                     if (!x.OBFSPassword.empty()) {
                         obfs.AddMember("password", rapidjson::StringRef(x.OBFSPassword.c_str()), allocator);
                     }
-                    proxy.AddMember("obfs", obfs, allocator);
-
+                    if (x.OBFSParam != "none") {
+                        proxy.AddMember("obfs", obfs, allocator);
+                    }
                 }
                 break;
             }
@@ -3365,7 +3365,9 @@ std::string nodeToSingbox(std::vector<Proxy> nodes) {
                     if (!x.OBFSPassword.empty()) {
                         obfs.AddMember("password", rapidjson::StringRef(x.OBFSPassword.c_str()), allocator);
                     }
-                    proxy.AddMember("obfs", obfs, allocator);
+                    if (x.OBFSParam != "none") {
+                        proxy.AddMember("obfs", obfs, allocator);
+                    }
 
                 }
                 break;
