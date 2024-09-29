@@ -2,8 +2,17 @@
 set -xe
 
 # 安装必要的工具和库
-apk add gcc g++ build-base linux-headers cmake make autoconf automake libtool python3
-apk add mbedtls-dev mbedtls-static zlib-dev rapidjson-dev zlib-static pcre2-dev
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+sudo apt update
+
+sudo apt install g++-13 -y
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+
+
+sudo apt update
+sudo apt install gcc g++ build-essential cmake make autoconf automake libtool python3 -y
+sudo apt install libmbedtls-dev zlib1g-dev rapidjson-dev libpcre2-dev -y
 
 # 构建并安装静态版本的 curl
 git clone https://github.com/curl/curl --depth=1 --branch curl-8_4_0
