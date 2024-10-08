@@ -3138,8 +3138,12 @@ Proxy explodeStr(std::string str,  std::string type) {
             default:
                 break;
         }
-    } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
+    } catch (const YAML::ParserException& e) {
+        // Catching YAML-specific parsing exceptions
+        std::cerr << "YAML Parsing Error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Catching general exceptions
+        std::cerr << "An error occurred: " << e.what() << std::endl;
     }
     return node;
 }
@@ -3148,8 +3152,12 @@ std::vector<Proxy> explodeConfs(std::string str) {
     std::vector<Proxy> nodes;
     try {
         explodeConfContent(str, nodes);
-    } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
+    } catch (const YAML::ParserException& e) {
+        // Catching YAML-specific parsing exceptions
+        std::cerr << "YAML Parsing Error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Catching general exceptions
+        std::cerr << "An error occurred: " << e.what() << std::endl;
     }
     return nodes;
 }

@@ -7,19 +7,19 @@ apk add mbedtls-dev mbedtls-static zlib-dev rapidjson-dev zlib-static pcre2-dev
 git clone https://github.com/curl/curl --depth=1 --branch curl-8_4_0
 cd curl
 cmake -DCURL_USE_MBEDTLS=ON -DHTTP_ONLY=ON -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_USE_LIBSSH2=OFF -DBUILD_CURL_EXE=OFF . > /dev/null
-make install -j2 > /dev/null
+make install -j$(nproc) > /dev/null
 cd ..
 
 git clone https://github.com/jbeder/yaml-cpp --depth=1
 cd yaml-cpp
 cmake -DCMAKE_BUILD_TYPE=Release -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_TOOLS=OFF . > /dev/null
-make install -j3 > /dev/null
+make install -j$(nproc) > /dev/null
 cd ..
 
 git clone https://github.com/ftk/quickjspp --depth=1
 cd quickjspp
 cmake -DCMAKE_BUILD_TYPE=Release .
-make quickjs -j3 > /dev/null
+make quickjs -j$(nproc) > /dev/null
 install -d /usr/lib/quickjs/
 install -m644 quickjs/libquickjs.a /usr/lib/quickjs/
 install -d /usr/include/quickjs/
@@ -31,19 +31,19 @@ git clone https://github.com/PerMalmberg/libcron --depth=1
 cd libcron
 git submodule update --init
 cmake -DCMAKE_BUILD_TYPE=Release .
-make libcron install -j3
+make libcron install -j$(nproc)
 cd ..
 
 git clone https://github.com/ToruNiina/toml11 --branch="v3.7.1" --depth=1
 cd toml11
 cmake -DCMAKE_CXX_STANDARD=11 .
-make install -j4
+make install -j$(nproc)
 cd ..
 
 export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
 # cd ..
 cmake -DCMAKE_BUILD_TYPE=Release .
-make -j3
+make -j$(nproc)
 rm subconverter
 # shellcheck disable=SC2046
 g++ -o base/subconverter $(find CMakeFiles/subconverter.dir/src/ -name "*.o")  -static -lpcre2-8 -lyaml-cpp -L/usr/lib64 -lcurl -lmbedtls -lmbedcrypto -lmbedx509 -lz -l:quickjs/libquickjs.a -llibcron -O3 -s
