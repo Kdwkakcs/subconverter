@@ -2965,8 +2965,9 @@ std::string nodeToSingbox(Proxy node) {
                 }
                 if (!x.FakeType.empty())
                     proxy.AddMember("network", rapidjson::StringRef(x.FakeType.c_str()), allocator);
-                if (!x.OBFSParam.empty())
+                if (!x.OBFSParam.empty() && x.OBFSParam != "none") {
                     proxy.AddMember("obfs", rapidjson::StringRef(x.OBFSParam.c_str()), allocator);
+                }
                 break;
             }
             case ProxyType::Hysteria2: {
@@ -3005,15 +3006,13 @@ std::string nodeToSingbox(Proxy node) {
                     }
                     proxy.AddMember("down_mbps", std::stoi(x.DownMbps), allocator);
                 }
-                if (!x.OBFSParam.empty()) {
+                if (!x.OBFSParam.empty() && x.OBFSParam != "none") {
                     rapidjson::Value obfs(rapidjson::kObjectType);
                     obfs.AddMember("type", rapidjson::StringRef(x.OBFSParam.c_str()), allocator);
                     if (!x.OBFSPassword.empty()) {
                         obfs.AddMember("password", rapidjson::StringRef(x.OBFSPassword.c_str()), allocator);
                     }
-                    if (x.OBFSParam != "none") {
-                        proxy.AddMember("obfs", obfs, allocator);
-                    }
+                    proxy.AddMember("obfs", obfs, allocator);
                 }
                 break;
             }

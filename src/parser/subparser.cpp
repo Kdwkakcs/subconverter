@@ -3120,28 +3120,36 @@ void explodeString(std::string str, std::vector<Proxy> &nodes, std::string type)
 
 Proxy explodeStr(std::string str,  std::string type) {
     Proxy node;
-    switch (hash_(type)) {
-        case "link"_hash:
-            explode(str, node);
-            break;
-        case "clash"_hash:
-            node = explodeClashStr(str);
-            break;
-        case "singbox"_hash:
-            node = explodeSingboxStr(str);
-            break;
-        case "base64"_hash:
-            str = urlSafeBase64Decode(str);
-            explode(str, node);
-            break;
-        default:
-            break;
+    try {
+        switch (hash_(type)) {
+            case "link"_hash:
+                explode(str, node);
+                break;
+            case "clash"_hash:
+                node = explodeClashStr(str);
+                break;
+            case "singbox"_hash:
+                node = explodeSingboxStr(str);
+                break;
+            case "base64"_hash:
+                str = urlSafeBase64Decode(str);
+                explode(str, node);
+                break;
+            default:
+                break;
+        }
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
     }
     return node;
 }
 
 std::vector<Proxy> explodeConfs(std::string str) {
     std::vector<Proxy> nodes;
-    explodeConfContent(str, nodes);
+    try {
+        explodeConfContent(str, nodes);
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
     return nodes;
 }
