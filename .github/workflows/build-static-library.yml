@@ -1,0 +1,103 @@
+name: Build Static Library
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            script: scripts/build.windows.library.sh
+            artifact: subconverter-windows-static-lib
+            
+          - name: macOS
+            os: macos-latest
+            script: scripts/build.macos.library.sh
+            artifact: subconverter-macos-static-lib
+            
+          - name: Alpine
+            os: ubuntu-latest
+            container: alpine:latest
+            script: scripts/build.alpine.library.sh
+            artifact: subconverter-alpine-static-lib
+
+    name: Build on ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Setup MSYS2 (Windows)
+        if: matrix.name == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: git base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-nghttp2 mingw-w64-x86_64-openssl
+
+      - name: Setup macOS
+        if: matrix.name == 'macOS'
+        run: |
+          brew update
+          brew install cmake rapidjson zlib pcre2 pkgconfig
+
+      - name: Build Static Library
+        shell: bash
+        run: |
+          chmod +x ${{ matrix.script }}
+          ${{ matrix.script }}
+
+      - name: Package Library Files
+        shell: bash
+        run: |
+          mkdir -p dist/include dist/lib
+          # Copy header files
+          cp -r src/*.h* dist/include/
+          # Copy static library (adjust paths based on your build output)
+          if [ "${{ matrix.name }}" = "Windows" ]; then
+            cp build/libsubconverter.a dist/lib/
+          elif [ "${{ matrix.name }}" = "macOS" ]; then
+            cp build/libsubconverter.a dist/lib/
+          else
+            cp build/libsubconverter.a dist/lib/
+          fi
+          tar czf ${{ matrix.artifact }}.tar.gz dist/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          files: |
+            subconverter-windows-static-lib.tar.gz
+            subconverter-macos-static-lib.tar.gz
+            subconverter-alpine-static-lib.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

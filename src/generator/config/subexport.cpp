@@ -2461,7 +2461,7 @@ void proxyToSingBox(std::vector<Proxy> &nodes, rapidjson::Document &json, std::v
                 proxy.AddMember("mtu", x.Mtu, allocator);
                 break;
             }
-            case ProxyType::HTTP:
+            case ProxyType::HTTP: 
             case ProxyType::HTTPS: {
                 addSingBoxCommonMembers(proxy, x, "http", allocator);
                 if (!x.Username.empty()) {
