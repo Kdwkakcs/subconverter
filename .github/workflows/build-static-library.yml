@@ -18,27 +18,25 @@ jobs:
             os: windows-latest
             script: scripts/build.windows.library.sh
             artifact: subconverter-windows-static-lib
-            
+            shell: msys2 {0}
           - name: macOS
             os: macos-latest
             script: scripts/build.macos.library.sh
             artifact: subconverter-macos-static-lib
-            
-          - name: Alpine
+            shell: bash
+          - name: Ubuntu
             os: ubuntu-latest
-            container: alpine:latest
-            script: scripts/build.alpine.library.sh
-            artifact: subconverter-alpine-static-lib
+            script: scripts/build.ubuntu.library.sh
+            artifact: subconverter-ubuntu-static-lib
+            shell: bash
 
     name: Build on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: 'recursive'
 
       - name: Setup MSYS2 (Windows)
         if: matrix.name == 'Windows'
@@ -46,7 +44,12 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          install: git base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-nghttp2 mingw-w64-x86_64-openssl
+          install: git base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-nghttp2 mingw-w64-x86_64-openssl mingw-w64-x86_64-pcre2 patch
+
+      # Remove this step as it's no longer needed
+      # - name: Add MSYS2 to PATH
+      #   if: matrix.name == 'Windows'
+      #   run: echo "C:\\msys64\\usr\\bin" >> $GITHUB_PATH
 
       - name: Setup macOS
         if: matrix.name == 'macOS'
@@ -54,11 +57,33 @@ jobs:
           brew update
           brew install cmake rapidjson zlib pcre2 pkgconfig
 
-      - name: Build Static Library
+      # - name: Build Static Library
+      #   shell: ${{ matrix.shell }}
+      #   run: |
+      #     chmod +x ${{ matrix.script }}
+      #     if [ "${{ matrix.name }}" = "Ubuntu" ]; then
+      #       sudo bash ${{ matrix.script }}
+      #     else
+      #       bash ${{ matrix.script }}
+      #     fi
+
+      - name: Build Static Library(windows)
+        if: matrix.name == 'Windows'
+        shell: msys2 {0}
+        run: |
+          bash ${{ matrix.script }}
+
+      - name: Build Static Library(macOS)
+        if: matrix.name == 'macOS'
         shell: bash
         run: |
-          chmod +x ${{ matrix.script }}
-          ${{ matrix.script }}
+          bash ${{ matrix.script }}
+      
+      - name: Build Static Library(Ubuntu)
+        if: matrix.name == 'Ubuntu'
+        shell: bash
+        run: |
+          sudo bash ${{ matrix.script }}
 
       - name: Package Library Files
         shell: bash
@@ -68,11 +93,11 @@ jobs:
           cp -r src/*.h* dist/include/
           # Copy static library (adjust paths based on your build output)
           if [ "${{ matrix.name }}" = "Windows" ]; then
-            cp build/libsubconverter.a dist/lib/
+            cp libsubconverter.a dist/lib/
           elif [ "${{ matrix.name }}" = "macOS" ]; then
-            cp build/libsubconverter.a dist/lib/
+            cp libsubconverter.a dist/lib/
           else
-            cp build/libsubconverter.a dist/lib/
+            cp libsubconverter.a dist/lib/
           fi
           tar czf ${{ matrix.artifact }}.tar.gz dist/
 
@@ -98,6 +123,6 @@ jobs:
           files: |
             subconverter-windows-static-lib.tar.gz
             subconverter-macos-static-lib.tar.gz
-            subconverter-alpine-static-lib.tar.gz
+            subconverter-ubuntu-static-lib.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
