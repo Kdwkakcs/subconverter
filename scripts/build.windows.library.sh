@@ -83,7 +83,7 @@ make install -j4
 cd ..
 
 # 构建并安装静态版本的 toml11
-git clone https://github.com/ToruNiina/toml11 --branch="v3.7.1" --depth=1
+git clone https://github.com/ToruNiina/toml11 --branch="v4.3.0" --depth=1
 cd toml11
 cmake -DCMAKE_INSTALL_PREFIX="$MINGW_PREFIX" \
       -G "Unix Makefiles" \
